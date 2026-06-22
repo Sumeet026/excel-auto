@@ -443,7 +443,18 @@ function _initMockServices() {
         console.log('[Mock User] password updated');
       },
       async sendEmailVerification() {
-        console.log('[Mock User] email verification sent');
+        this.emailVerified = true;
+        localStorage.setItem('mock_user', JSON.stringify({
+          uid: this.uid, email: this.email, displayName: this.displayName,
+          emailVerified: true, photoURL: this.photoURL
+        }));
+        const users = _mockStore('mock_db_users');
+        const idx = users.findIndex(u => u.uid === this.uid);
+        if (idx > -1) {
+          users[idx].emailVerified = true;
+          _mockSave('mock_db_users', users);
+        }
+        console.log('[Mock User] email verification sent & marked as verified');
       },
       async reauthenticateWithCredential(cred) {
         console.log('[Mock User] reauthenticated');
@@ -503,7 +514,9 @@ function _initMockServices() {
         err.code = 'auth/user-not-found';
         throw err;
       }
-      const userData = { uid: found.uid, email: found.email, displayName: found.displayName, emailVerified: !!found.emailVerified, photoURL: found.photoURL || null };
+      found.emailVerified = true;
+      _mockSave('mock_db_users', users);
+      const userData = { uid: found.uid, email: found.email, displayName: found.displayName, emailVerified: true, photoURL: found.photoURL || null };
       const user = _createMockUserObject(userData);
       localStorage.setItem('mock_user', JSON.stringify(userData));
       this._notifyListeners(user);

@@ -104,6 +104,8 @@ window.getCurrentUser = () => currentUserObj;
 function initAuthObserver() {
   const path = window.location.pathname;
   const isAuthPage = /login|signup|index/.test(path) || path === '/';
+  const isSignupPage = /signup/.test(path);
+  const isLoginPage = /login/.test(path);
 
   // Show page skeleton immediately — don't block on auth
   if (!isAuthPage) _showPageSkeleton();
@@ -124,7 +126,7 @@ function initAuthObserver() {
       _hidePageSkeleton();
       updateProfileUI(user);
       await _checkAdminStatus(user);
-      if (isAuthPage && !path.includes('index.html')) {
+      if (isLoginPage) {
         window.location.replace('dashboard.html');
       }
     } else {

@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initLoginForm();
   initGoogleLogin();
   initForgotPasswordModal();
+  initResendVerification();
 });
 
 /**
@@ -40,26 +41,21 @@ function initLoginForm() {
     if (spinner) spinner.style.display = 'inline-block';
 
     try {
+      // Hide resend box on new attempt
+      const resendBox = document.getElementById('resend-verify-box');
+      const resendSuccess = document.getElementById('resend-success');
+      if (resendBox) resendBox.style.display = 'none';
+      if (resendSuccess) resendSuccess.style.display = 'none';
+
       // Sign in using Firebase Auth
       console.log('[Login] Attempting email sign-in for:', email);
-      await auth.signInWithEmailAndPassword(email, password);
-        // Verify email confirmation
-        const user = auth.currentUser;
-        if (user && !user.emailVerified) {
-          // Prompt user to verify email
-          await window.auth.signOut();
-          if (alertMsg) alertMsg.textContent = 'Please verify your email address before logging in.';
-          if (alertBox) alertBox.style.display = 'flex';
-          if (submitBtn) submitBtn.disabled = false;
-          if (spinner) spinner.style.display = 'none';
-          return;
-        }
+      const loginResult = await auth.signInWithEmailAndPassword(email, password);
       
-      // Log activity
-      await logUserActivity("Logged in: " + email);
+      // Log activity (non-blocking)
+      logUserActivity("Logged in: " + email).catch(() => {});
 
-      // Redirect immediately to studio
-      window.location.href = 'dashboard.html';
+      // Redirect immediately to dashboard
+      window.location.replace('dashboard.html');
 
     } catch (err) {
       console.error("[Login] Login failed with details:", err);
@@ -217,4 +213,44 @@ function initForgotPasswordModal() {
     }
   });
   }
+}
+
+/**
+ * Handle Resend Verification Email Button
+ */
+function initResendVerification() {
+  const resendBtn = document.getElementById('resend-verify-btn');
+  const spinner = document.getElementById('resend-spinner');
+  const successMsg = document.getElementById('resend-success');
+  if (!resendBtn) return;
+
+  resendBtn.addEventListener('click', async () => {
+    const resendBox = document.getElementById('resend-verify-box');
+    const email = resendBox ? resendBox.dataset.userEmail : null;
+    if (!email) return;
+
+    resendBtn.disabled = true;
+    if (spinner) spinner.style.display = 'inline-block';
+    if (successMsg) successMsg.style.display = 'none';
+
+    try {
+      // First sign in briefly to get the user object, then send verification
+      const password = document.getElementById('login-password').value;
+      const cred = await auth.signInWithEmailAndPassword(email, password);
+      const user = cred.user;
+      if (user && typeof user.sendEmailVerification === 'function') {
+        await user.sendEmailVerification();
+      }
+      await auth.signOut();
+
+      if (successMsg) successMsg.style.display = 'block';
+      showToast('Verification email resent! Check your inbox.', 'success');
+    } catch (err) {
+      console.error('[Login] Resend verification failed:', err);
+      showToast(err.message || 'Failed to resend verification email.', 'error');
+    } finally {
+      resendBtn.disabled = false;
+      if (spinner) spinner.style.display = 'none';
+    }
+  });
 }

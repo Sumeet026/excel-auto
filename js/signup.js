@@ -83,16 +83,9 @@ function initSignupForm() {
         console.warn("Could not dispatch verification email:", evErr);
       }
 
-      // 5. Shift display wrapper to verification step page
-      document.getElementById('sent-email-placeholder').textContent = email;
-      document.getElementById('signup-form-step').style.display = 'none';
-      document.getElementById('signup-verification-step').style.display = 'block';
-      // Reset UI state
-      submitBtn.disabled = false;
-      spinner.style.display = 'none';
-
-      // Log activity
-      await logUserActivity("Registered user account: " + email);
+      // 5. Sign out and redirect to login
+      await auth.signOut();
+      window.location.replace('login.html');
 
     } catch (err) {
       console.error("[Signup] Sign up failed with details:", err);

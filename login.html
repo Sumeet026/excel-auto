@@ -30,6 +30,20 @@
         <span id="auth-alert-message">Error message goes here</span>
       </div>
 
+      <!-- Resend Verification (hidden by default) -->
+      <div id="resend-verify-box" style="display: none; padding: 14px; margin-bottom: 20px; border-radius: var(--border-radius-md); font-size: 0.85rem; background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.25); text-align: center;">
+        <p style="margin: 0 0 10px 0; color: var(--text-secondary);">Email not verified yet?</p>
+        <button class="btn btn-primary" id="resend-verify-btn" style="padding: 8px 20px; font-size: 0.82rem;">
+          <i class="fas fa-paper-plane" style="margin-right: 6px;"></i>
+          <span>Resend Verification Email</span>
+          <span class="spinner" id="resend-spinner" style="display: none; width: 14px; height: 14px; border-width: 2px;"></span>
+        </button>
+        <div id="resend-success" style="display: none; color: #22c55e; margin-top: 8px;">
+          <i class="fas fa-check-circle" style="margin-right: 4px;"></i>
+          Verification email sent! Check your inbox.
+        </div>
+      </div>
+
       <form id="login-form">
         <div class="form-group">
           <label class="form-label" for="login-email">Email Address</label>
