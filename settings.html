@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Settings - ExcelAuto</title>
+  
+  <!-- FontAwesome & Custom CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <i class="fas fa-file-excel"></i>
+        <span>ExcelAuto</span>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="sidebar-menu-item">
+          <a href="dashboard.html">
+            <i class="fas fa-chart-pie"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="reports.html">
+            <i class="fas fa-file-invoice"></i>
+            <span>Report Generator</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="analytics.html">
+            <i class="fas fa-chart-line"></i>
+            <span>Analytics</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="profile.html">
+            <i class="fas fa-user-circle"></i>
+            <span>User Profile</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item active">
+          <a href="settings.html">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+          </a>
+        </li>
+      </ul>
+      <div class="sidebar-footer">
+        <div class="sidebar-profile">
+          <img class="profile-avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150" alt="Avatar">
+          <div class="profile-info">
+            <span class="profile-name">Loading...</span>
+            <span class="profile-role">Premium Account</span>
+          </div>
+        </div>
+        <button class="logout-btn" id="logout-btn">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+      <!-- Top bar -->
+      <header class="top-bar">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+          <h2 class="page-title">Settings Console</h2>
+        </div>
+        
+        <div class="top-bar-actions">
+          <div class="notifications-wrapper">
+            <button class="icon-badge" id="notification-bell-btn">
+              <i class="fas fa-bell"></i>
+              <span class="badge" id="notification-badge" style="display: none;"></span>
+            </button>
+            <div class="notification-dropdown" id="notification-dropdown">
+              <div class="notification-header">
+                <span>Notifications</span>
+                <a href="#" style="color: var(--primary); font-size: 0.75rem;" id="mark-all-read-btn">Mark all read</a>
+              </div>
+              <div class="notification-list" id="notification-list">
+                <div style="padding: 16px; text-align: center; color: var(--text-muted); font-size: 0.8rem;">Loading notifications...</div>
+              </div>
+            </div>
+          </div>
+          
+          <button class="theme-toggle-btn" id="theme-toggle">
+            <i class="fas fa-moon"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main workspace -->
+      <main class="main-content" style="max-width: 900px; display: flex; flex-direction: column; gap: 32px;">
+        
+        <!-- Section: Look and Theme -->
+        <div class="card">
+          <h3 class="section-title" style="margin-bottom: 20px;"><i class="fas fa-palette"></i> Display Preferences</h3>
+          
+          <div class="form-group" style="margin-bottom: 24px;">
+            <label class="form-label">Active Theme Skin</label>
+            <div class="theme-selector-grid" style="margin-top: 8px;">
+              <div class="theme-card" id="theme-btn-dark" data-theme="dark">
+                <i class="fas fa-moon" style="font-size: 1.5rem; margin-bottom: 8px; color: var(--primary); display: block;"></i>
+                Deep Space Dark
+              </div>
+              <div class="theme-card" id="theme-btn-light" data-theme="light">
+                <i class="fas fa-sun" style="font-size: 1.5rem; margin-bottom: 8px; color: var(--warning); display: block;"></i>
+                Minimalist Light
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="settings-language">Default Language</label>
+            <select class="form-select" id="settings-language">
+              <option value="en">English (US/UK)</option>
+              <option value="es">Español (Spanish)</option>
+              <option value="fr">Français (French)</option>
+              <option value="de">Deutsch (German)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Section: Notification Preferences -->
+        <div class="card">
+          <h3 class="section-title" style="margin-bottom: 20px;"><i class="fas fa-bell"></i> Notification Preferences</h3>
+          <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 20px;">
+            Select which notification logs are dispatched to your live notification tray.
+          </p>
+          
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <label class="checkbox-group">
+              <input type="checkbox" id="settings-notif-upload">
+              <div>
+                <div style="color: var(--text-primary); font-size: 0.9rem; font-weight:600;">File uploads complete</div>
+                <div style="color: var(--text-muted); font-size: 0.75rem;">Receive warning alerts when spreadsheet uploads complete.</div>
+              </div>
+            </label>
+
+            <label class="checkbox-group">
+              <input type="checkbox" id="settings-notif-clean">
+              <div>
+                <div style="color: var(--text-primary); font-size: 0.9rem; font-weight:600;">Data cleaning complete</div>
+                <div style="color: var(--text-muted); font-size: 0.75rem;">Receive success alerts when data sheets are cleaned and output.</div>
+              </div>
+            </label>
+
+            <label class="checkbox-group">
+              <input type="checkbox" id="settings-notif-export">
+              <div>
+                <div style="color: var(--text-primary); font-size: 0.9rem; font-weight:600;">Report compilation complete</div>
+                <div style="color: var(--text-muted); font-size: 0.75rem;">Receive logs when merging or compiling PDF/Excel finishes.</div>
+              </div>
+            </label>
+          </div>
+          
+          <div class="modal-footer" style="padding: 16px 0 0 0; border-top: 1px solid var(--card-border); margin-top: 24px;">
+            <button class="btn btn-primary" id="btn-save-settings">
+              <span>Save System Settings</span>
+              <span class="spinner" id="settings-spinner" style="display: none; width: 16px; height: 16px; border-width: 2px;"></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section: Dynamic Firebase setup (Enterprise connectivity) -->
+        <div class="card">
+          <h3 class="section-title" style="margin-bottom: 8px;"><i class="fas fa-server"></i> Link Live Firebase Instance</h3>
+          <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 20px;">
+            By default, ExcelAuto runs inside a local sandbox. Paste your Firebase web app configuration JSON below to connect it to your live cloud databases.
+          </p>
+          
+          <div class="form-group">
+            <label class="form-label" for="settings-fb-config">Firebase Configuration JSON</label>
+            <textarea class="form-input" id="settings-fb-config" rows="8" placeholder='{
+  "apiKey": "AIzaSy...",
+  "authDomain": "...",
+  "databaseURL": "...",
+  "projectId": "...",
+  "storageBucket": "...",
+  "messagingSenderId": "...",
+  "appId": "..."
+}' style="font-family: monospace; font-size: 0.8rem; line-height: 1.5; resize: vertical;"></textarea>
+          </div>
+          
+          <div class="modal-footer" style="padding: 16px 0 0 0; border-top: 1px solid var(--card-border);">
+            <button class="btn btn-danger" id="btn-reset-fb-config">Disconnect & Reset</button>
+            <button class="btn btn-primary" id="btn-save-fb-config">Link Firebase Database</button>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Load Firebase compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+
+  <!-- Script Modules -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/settings.js"></script>
+</body>
+</html>

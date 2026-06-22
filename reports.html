@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report Generator - ExcelAuto</title>
+  
+  <!-- FontAwesome & Custom CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <style>
+    .reports-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+    @media (max-width: 992px) {
+      .reports-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .file-check-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border: 1px solid var(--card-border);
+      border-radius: var(--border-radius-sm);
+      margin-bottom: 8px;
+      background: rgba(255,255,255,0.01);
+      cursor: pointer;
+    }
+    .file-check-item input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+    }
+    .report-preview-box {
+      border: 1px dashed var(--input-border);
+      border-radius: var(--border-radius-lg);
+      padding: 32px;
+      min-height: 450px;
+      background: rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .report-compiled-card {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--border-radius-md);
+      padding: 24px;
+      text-align: left;
+    }
+    .summary-metric-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 0.9rem;
+    }
+    .template-card:hover {
+      border-color: var(--primary) !important;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    .template-card:active {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <i class="fas fa-file-excel"></i>
+        <span>ExcelAuto</span>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="sidebar-menu-item">
+          <a href="dashboard.html">
+            <i class="fas fa-chart-pie"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item active">
+          <a href="reports.html">
+            <i class="fas fa-file-invoice"></i>
+            <span>Report Generator</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="analytics.html">
+            <i class="fas fa-chart-line"></i>
+            <span>Analytics</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="ai-center.html">
+            <i class="fas fa-robot"></i>
+            <span>AI Command Center</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="profile.html">
+            <i class="fas fa-user-circle"></i>
+            <span>User Profile</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="settings.html">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+          </a>
+        </li>
+      </ul>
+      <div class="sidebar-footer">
+        <div class="sidebar-profile">
+          <img class="profile-avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150" alt="Avatar">
+          <div class="profile-info">
+            <span class="profile-name">Loading...</span>
+            <span class="profile-role">Premium Account</span>
+          </div>
+        </div>
+        <button class="logout-btn" id="logout-btn">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+      <!-- Top header -->
+      <header class="top-bar">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+          <h2 class="page-title">Report Generator</h2>
+        </div>
+        
+        <div class="top-bar-actions">
+          <!-- Notification center -->
+          <div class="notifications-wrapper">
+            <button class="icon-badge" id="notification-bell-btn">
+              <i class="fas fa-bell"></i>
+              <span class="badge" id="notification-badge" style="display: none;"></span>
+            </button>
+            <div class="notification-dropdown" id="notification-dropdown">
+              <div class="notification-header">
+                <span>Notifications</span>
+                <a href="#" style="color: var(--primary); font-size: 0.75rem;" id="mark-all-read-btn">Mark all read</a>
+              </div>
+              <div class="notification-list" id="notification-list">
+                <div style="padding: 16px; text-align: center; color: var(--text-muted); font-size: 0.8rem;">Loading notifications...</div>
+              </div>
+            </div>
+          </div>
+          
+          <button class="theme-toggle-btn" id="theme-toggle">
+            <i class="fas fa-moon"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <main class="main-content">
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SECTION: REPORT TEMPLATES
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div style="margin-bottom: 40px;">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+            <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(99,102,241,0.1); display: flex; align-items: center; justify-content: center;">
+              <i class="fas fa-wand-magic-sparkles" style="color: var(--primary); font-size: 1.1rem;"></i>
+            </div>
+            <div>
+              <h2 style="font-size: 1.3rem; font-weight: 800; margin: 0;">Report Templates</h2>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Prebuilt enterprise templates with realistic sample data — one click to generate and export.</p>
+            </div>
+          </div>
+
+          <!-- Template Grid -->
+          <div id="templates-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+            <!-- Populated by report-templates.js -->
+          </div>
+
+          <!-- Template Preview + Export Panel -->
+          <div id="template-export-panel" style="display: none;">
+            <div class="card">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+                <div>
+                  <h3 class="section-title" style="margin-bottom: 4px;"><i class="fas fa-table"></i> Generated Data</h3>
+                  <span id="template-preview-info" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button class="btn btn-primary" id="btn-template-export-xlsx" style="padding: 8px 14px; font-size: 0.8rem;">
+                    <i class="fas fa-file-excel"></i> Export XLSX
+                  </button>
+                  <button class="btn btn-secondary" id="btn-template-export-csv" style="padding: 8px 14px; font-size: 0.8rem;">
+                    <i class="fas fa-file-csv"></i> Export CSV
+                  </button>
+                  <button class="btn btn-danger" id="btn-template-export-pdf" style="padding: 8px 14px; font-size: 0.8rem;">
+                    <i class="fas fa-file-pdf"></i> Export PDF
+                  </button>
+                </div>
+              </div>
+              <div id="template-preview-container">
+                <!-- Populated by report-templates.js -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div style="border-top: 1px solid var(--card-border); margin-bottom: 32px;"></div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SECTION: CUSTOM REPORT COMPILER
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div style="margin-bottom: 16px;">
+          <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 4px;">Custom Report Compiler</h2>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Select your uploaded spreadsheets and compile them into a unified report.</p>
+        </div>
+
+        <div class="reports-grid">
+          
+          <!-- Column 1: Report Configuration -->
+          <div style="display: flex; flex-direction: column; gap: 32px;">
+            
+            <div class="card">
+              <h3 class="section-title" style="margin-bottom: 20px;"><i class="fas fa-sliders"></i> Compile Parameters</h3>
+              
+              <!-- Selected files check list -->
+              <div class="form-group">
+                <label class="form-label">Select Source Spreadsheets</label>
+                <div id="reports-file-selector" style="max-height: 200px; overflow-y: auto; padding-right: 4px;">
+                  <div style="padding: 12px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+                    No files uploaded yet.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Merging settings -->
+              <div class="form-group" style="margin-top: 16px;">
+                <label class="form-label" for="report-merge-type">Operation Mode</label>
+                <select class="form-select" id="report-merge-type">
+                  <option value="single">Single Sheet Report (First Selected)</option>
+                  <option value="merge">Merge Sheets (Append matching keys)</option>
+                  <option value="join">Join Sheets (Inner match by ID key)</option>
+                </select>
+              </div>
+
+              <div class="form-group" id="report-join-key-group" style="display: none;">
+                <label class="form-label" for="report-join-key">Join Key Identifier Header</label>
+                <input class="form-input" type="text" id="report-join-key" placeholder="e.g. id or email">
+              </div>
+
+              <!-- Report summary features checkboxes -->
+              <div class="form-group">
+                <label class="form-label">Include in PDF Document</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;">
+                  <label class="checkbox-group" style="font-size: 0.85rem;">
+                    <input type="checkbox" id="inc-data-table" checked>
+                    <span>Raw Data Grid (Table)</span>
+                  </label>
+                  <label class="checkbox-group" style="font-size: 0.85rem;">
+                    <input type="checkbox" id="inc-summary-stats" checked>
+                    <span>Summary Statistics</span>
+                  </label>
+                  <label class="checkbox-group" style="font-size: 0.85rem;">
+                    <input type="checkbox" id="inc-charts" checked>
+                    <span>Visual Bar Charts</span>
+                  </label>
+                  <label class="checkbox-group" style="font-size: 0.85rem;">
+                    <input type="checkbox" id="inc-ai-insight" checked>
+                    <span>AI Insights Summary</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="report-header-title">Report Banner Header</label>
+                <input class="form-input" type="text" id="report-header-title" placeholder="e.g. Q2 Sales Performance Summary">
+              </div>
+
+              <!-- Compilation Progress Bar -->
+              <div id="compile-progress-wrapper" style="display: none; margin-top: 12px;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 6px;">
+                  <span style="color: var(--text-secondary);" id="compile-progress-text">Processing...</span>
+                </div>
+                <div class="file-progress-bar">
+                  <div class="file-progress-fill" id="compile-progress-fill" style="width: 0%; transition: width 0.3s;"></div>
+                </div>
+              </div>
+
+              <div class="modal-footer" style="padding: 16px 0 0 0; border-top: 1px solid var(--card-border); margin-top: 24px;">
+                <button class="btn btn-primary" id="btn-compile-report" style="width: 100%;">
+                  <span>Generate & Preview Report</span>
+                  <span class="spinner" id="compile-spinner" style="display: none; width: 16px; height: 16px; border-width: 2px;"></span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Column 2: Live Compilation & Download Actions -->
+          <div style="display: flex; flex-direction: column; gap: 32px;">
+            
+            <div class="card" style="min-height: 500px; display: flex; flex-direction: column;">
+              <h3 class="section-title" style="margin-bottom: 20px;"><i class="fas fa-file-pdf"></i> Compilation Preview</h3>
+              
+              <div class="report-preview-box" id="report-preview-container">
+                <i class="fas fa-file-lines" style="font-size: 3.5rem; color: var(--text-muted); margin-bottom: 16px;"></i>
+                <div class="upload-text" style="color: var(--text-secondary);">No Compiled Report</div>
+                <div class="upload-subtext">Choose source sheets and click "Generate" to compile your dashboard.</div>
+              </div>
+              
+              <!-- Download buttons drawer (Only shows when report is active) -->
+              <div id="report-actions-drawer" style="display: none; margin-top: auto; border-top: 1px solid var(--card-border); padding-top: 24px;">
+                <h4 style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 12px;">Export & Download formats:</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 8px;">
+                  <button class="btn btn-danger" id="btn-dl-pdf" style="padding: 10px;"><i class="fas fa-file-pdf"></i> PDF</button>
+                  <button class="btn btn-primary" id="btn-dl-excel" style="padding: 10px;"><i class="fas fa-file-excel"></i> Excel</button>
+                  <button class="btn btn-secondary" id="btn-dl-csv" style="padding: 10px;"><i class="fas fa-file-csv"></i> CSV</button>
+                  <button class="btn btn-secondary" id="btn-dl-hindi" style="padding: 10px; background: #f59e0b; color: #fff;"><i class="fas fa-language"></i> Hindi</button>
+                  <button class="btn btn-secondary" id="btn-dl-email" style="padding: 10px; background: #ef4444; color: #fff;"><i class="fas fa-envelope"></i> Email</button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Load SheetJS CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  
+  <!-- Load jsPDF and AutoTable CDNs for client side PDF creation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- Firebase CDN components -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+
+  <!-- Email Report Modal -->
+  <div class="modal-overlay" id="email-manager-modal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;display:none;align-items:center;justify-content:center;">
+    <div class="modal-content" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--border-radius-md);padding:24px;width:90%;max-width:440px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h3 style="font-size:1.1rem;font-weight:700;"><i class="fas fa-envelope" style="color:var(--primary);margin-right:8px;"></i>Email Report</h3>
+        <button id="email-modal-close" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.1rem;"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Manager Email</label>
+        <input class="form-input" type="email" id="email-manager-addr" placeholder="manager@company.com" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Subject</label>
+        <input class="form-input" type="text" id="email-subject" placeholder="Monthly Report">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea class="form-input" id="email-message" rows="3" placeholder="Please review the attached report." style="resize:vertical;"></textarea>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
+        <button class="btn btn-secondary" id="btn-email-cancel">Cancel</button>
+        <button class="btn btn-primary" id="btn-email-send"><i class="fas fa-paper-plane"></i> Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script Modules -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/perf.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/reports.js"></script>
+  <script src="js/report-templates.js"></script>
+</body>
+</html>

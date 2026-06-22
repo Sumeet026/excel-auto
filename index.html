@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ExcelAuto - Enterprise Excel Automation Platform</title>
+  <meta name="description"
+    content="Automate spreadsheet operations, merge files, clean data, run advanced formulas, and generate premium interactive reports in real-time.">
+
+  <!-- FontAwesome & Outfit Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <style>
+    /* Unique Marketing/Landing overrides */
+    .landing-header {
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5%;
+      border-bottom: 1px solid var(--sidebar-border);
+      backdrop-filter: var(--backdrop-blur);
+      background: rgba(15, 23, 42, 0.4);
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .landing-logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .landing-logo i {
+      -webkit-text-fill-color: initial;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      border-radius: 8px;
+      padding: 6px;
+      color: white;
+    }
+
+    .landing-nav {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .landing-nav a {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: color var(--transition-speed);
+    }
+
+    .landing-nav a:hover {
+      color: var(--text-primary);
+    }
+
+    .hero-section {
+      padding: 160px 5% 80px;
+      min-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero-badge {
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      color: var(--primary);
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      animation: fadeIn 1s ease;
+    }
+
+    .hero-title {
+      font-size: 4rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 24px;
+      max-width: 900px;
+      animation: slideUp 0.8s ease;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, var(--primary) 30%, var(--secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      max-width: 650px;
+      margin-bottom: 40px;
+      line-height: 1.6;
+      animation: slideUp 1s ease;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      animation: slideUp 1.2s ease;
+    }
+
+    .features-section {
+      padding: 80px 5%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-title-center {
+      text-align: center;
+      font-size: 2.25rem;
+      font-weight: 800;
+      margin-bottom: 56px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 32px;
+    }
+
+    .feature-card {
+      text-align: left;
+    }
+
+    .feature-card i {
+      font-size: 2rem;
+      color: var(--primary);
+      margin-bottom: 20px;
+    }
+
+    .feature-card h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .feature-card p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .dashboard-preview {
+      margin-top: 60px;
+      width: 100%;
+      max-width: 1000px;
+      border-radius: var(--border-radius-lg);
+      border: 1px solid var(--card-border);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      aspect-ratio: 16/9;
+      background: var(--card-bg);
+      backdrop-filter: var(--backdrop-blur);
+      animation: fadeIn 1.5s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .dashboard-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.85;
+    }
+
+    .preview-play-btn {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: white;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+      cursor: pointer;
+      transition: all var(--transition-speed);
+      border: none;
+    }
+
+    .preview-play-btn:hover {
+      transform: scale(1.1);
+      background: var(--primary);
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2.5rem;
+      }
+
+      .landing-nav {
+        display: none;
+      }
+
+      .hero-ctas {
+        flex-direction: column;
+        width: 100%;
+        max-width: 300px;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Floating Orbs -->
+  <div class="bg-glow-orb orb-1"></div>
+  <div class="bg-glow-orb orb-2"></div>
+
+  <!-- Header -->
+  <header class="landing-header">
+    <div class="landing-logo">
+      <i class="fas fa-file-excel"></i>
+      <span>ExcelAuto</span>
+    </div>
+    <nav class="landing-nav">
+      <a href="#features">Features</a>
+      <a href="#demo">Console Demo</a>
+      <div class="hero-ctas" style="margin-bottom: 0;" id="nav-auth-buttons">
+        <a href="login.html" class="btn btn-secondary" style="padding: 8px 18px; font-size: 0.875rem;">Login</a>
+        <a href="signup.html" class="btn btn-primary" style="padding: 8px 18px; font-size: 0.875rem;">Sign Up</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-badge">⚡ Advanced Spreadsheet Engine</div>
+    <h1 class="hero-title">Automate Your Excel Workflows <span>In Seconds</span></h1>
+    <p class="hero-subtitle">Merge multiple sheets, clean raw columns, calculate complicated lookup formulas, and
+      compile enterprise-level PDF and Excel reports instantly.</p>
+
+    <div class="hero-ctas" id="hero-auth-actions">
+      <a href="signup.html" class="btn btn-primary">Start Automating Free</a>
+      <a href="login.html" class="btn btn-secondary">Access Console</a>
+    </div>
+
+    <!-- Interactive Mockup Preview -->
+    <div class="dashboard-preview" id="demo">
+      <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1200"
+        alt="Dashboard Preview Mockup">
+      <button class="preview-play-btn" onclick="location.href='login.html'"><i class="fas fa-play"></i></button>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section" id="features">
+    <h2 class="section-title-center">Engineered for High-Performance Data Teams</h2>
+    <div class="features-grid">
+
+      <div class="card feature-card">
+        <i class="fas fa-magic"></i>
+        <h3>Automated Data Cleaning</h3>
+        <p>Remove trailing whitespaces, duplicate rows, invalid date fields, and normalize phone formats with one-click
+          cleanup routines.</p>
+      </div>
+
+      <div class="card feature-card">
+        <i class="fas fa-object-group"></i>
+        <h3>Merge & Split Sheets</h3>
+        <p>Combine multiple XLS, XLSX, and CSV documents into unified data blocks. Map mismatching headers
+          automatically.</p>
+      </div>
+
+      <div class="card feature-card">
+        <i class="fas fa-calculator"></i>
+        <h3>Real-time Formula Engine</h3>
+        <p>Utilize built-in standard and lookup formulas like VLOOKUP, XLOOKUP, INDEX MATCH, and logical expressions
+          inside your templates.</p>
+      </div>
+
+      <div class="card feature-card">
+        <i class="fas fa-chart-line"></i>
+        <h3>Interactive Dashboard</h3>
+        <p>Monitor processing flows, counts of uploaded records, layout logs, and storage quotas through responsive live
+          analytics.</p>
+      </div>
+
+      <div class="card feature-card">
+        <i class="fas fa-file-pdf"></i>
+        <h3>PDF & XLS Report Compiler</h3>
+        <p>Export formatted tables, custom summaries, interactive charts, and structural summaries as high-definition
+          reports.</p>
+      </div>
+
+      <div class="card feature-card">
+        <i class="fas fa-shield-halved"></i>
+        <h3>Secure File Cloud Storage</h3>
+        <p>Files are safe in Firebase Cloud Storage, bound by strict field-level database rules to guarantee corporate
+          compliance.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <footer
+    style="padding: 40px 5%; text-align: center; border-top: 1px solid var(--sidebar-border); color: var(--text-muted); font-size: 0.85rem;">
+    &copy; 2026 ExcelAuto. All rights reserved. Powered by HTML5, CSS3, ES6 & Firebase.
+  </footer>
+
+  <!-- Load Firebase compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+
+  <!-- Load Configurations & Verification Logic -->
+  <script src="js/firebase-config.js"></script>
+  <script>
+    // Simply check if user is already authenticated to redirect or change landing page CTA buttons
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        // Change Navigation buttons to console redirect
+        const navAuth = document.getElementById('nav-auth-buttons');
+        if (navAuth) {
+          navAuth.innerHTML = `<a href="dashboard.html" class="btn btn-primary" style="padding: 8px 18px; font-size: 0.875rem;">Go to Dashboard <i class="fas fa-arrow-right"></i></a>`;
+        }
+
+        const heroAuth = document.getElementById('hero-auth-actions');
+        if (heroAuth) {
+          heroAuth.innerHTML = `
+            <a href="dashboard.html" class="btn btn-primary">Go to Dashboard Console</a>
+            <button class="btn btn-secondary" id="logout-landing-btn">Sign Out</button>
+          `;
+
+          document.getElementById('logout-landing-btn').addEventListener('click', () => {
+            auth.signOut().then(() => {
+              window.location.reload();
+            });
+          });
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>

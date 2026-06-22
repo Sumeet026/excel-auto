@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workspace - ExcelAuto</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/workspace.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo"><i class="fas fa-file-excel"></i><span>ExcelAuto</span></div>
+      <ul class="sidebar-menu">
+        <li class="sidebar-menu-item"><a href="dashboard.html"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a></li>
+        <li class="sidebar-menu-item"><a href="reports.html"><i class="fas fa-file-invoice"></i><span>Report Generator</span></a></li>
+        <li class="sidebar-menu-item"><a href="analytics.html"><i class="fas fa-chart-line"></i><span>Analytics</span></a></li>
+        <li class="sidebar-menu-item"><a href="ai-center.html"><i class="fas fa-robot"></i><span>AI Command Center</span></a></li>
+        <li class="sidebar-menu-item active"><a href="workspace.html"><i class="fas fa-folder-open"></i><span>Workspace</span></a></li>
+        <li class="sidebar-menu-item"><a href="profile.html"><i class="fas fa-user-circle"></i><span>User Profile</span></a></li>
+        <li class="sidebar-menu-item"><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+      </ul>
+      <div class="sidebar-footer">
+        <div class="sidebar-profile">
+          <img class="profile-avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150" alt="Avatar">
+          <div class="profile-info">
+            <span class="profile-name">Loading...</span>
+            <span class="profile-role">Premium Account</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-wrapper" style="margin-left:260px;display:flex;flex-direction:column;min-height:100vh;">
+
+      <!-- FILE MANAGER VIEW -->
+      <div id="ws-file-manager" class="workspace-container" style="flex:1;display:flex;overflow:hidden;">
+        <!-- FILE SIDEBAR -->
+        <div class="ws-sidebar">
+          <div class="ws-sidebar-header">
+            <div class="ws-logo"><i class="fas fa-folder-open"></i></div>
+            <h3>Files</h3>
+            <button class="ws-btn primary" id="ws-upload-btn" title="Upload"><i class="fas fa-plus"></i></button>
+          </div>
+          <nav class="ws-nav">
+            <div class="ws-nav-section">
+              <div class="ws-nav-label">Quick Access</div>
+              <div class="ws-nav-item active" data-view="all"><i class="fas fa-folder"></i>All Files<span class="badge" id="ws-count-all">0</span></div>
+              <div class="ws-nav-item" data-view="recent"><i class="fas fa-clock"></i>Recent</div>
+              <div class="ws-nav-item" data-view="favorites"><i class="fas fa-star"></i>Favorites<span class="badge" id="ws-count-fav">0</span></div>
+              <div class="ws-nav-item" data-view="shared"><i class="fas fa-share-nodes"></i>Shared</div>
+              <div class="ws-nav-item" data-view="pinned"><i class="fas fa-thumbtack"></i>Pinned</div>
+            </div>
+            <div class="ws-nav-section">
+              <div class="ws-nav-label">Folders</div>
+              <div id="ws-folder-tree" class="ws-tree"></div>
+            </div>
+            <div class="ws-nav-section">
+              <div class="ws-nav-label">System</div>
+              <div class="ws-nav-item" data-view="trash"><i class="fas fa-trash"></i>Trash<span class="badge" id="ws-count-trash">0</span></div>
+              <div class="ws-nav-item" data-view="archive"><i class="fas fa-box-archive"></i>Archive</div>
+            </div>
+          </nav>
+          <div class="ws-storage">
+            <div class="ws-storage-label"><span>Storage</span><span id="ws-storage-text">0 MB / 5 GB</span></div>
+            <div class="ws-storage-bar"><div class="fill" id="ws-storage-fill" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <!-- FILE MAIN AREA -->
+        <div class="ws-main">
+          <!-- TOOLBAR -->
+          <div class="ws-toolbar">
+            <button class="ws-btn" id="ws-menu-toggle" style="display:none;"><i class="fas fa-bars"></i></button>
+            <div class="breadcrumb" id="ws-breadcrumb">
+              <span data-path="/">All Files</span>
+            </div>
+            <div class="ws-search">
+              <i class="fas fa-search"></i>
+              <input type="text" id="ws-search-input" placeholder="Search files, reports, folders...">
+            </div>
+            <div class="ws-toolbar-actions">
+              <div class="ws-view-toggle">
+                <button class="active" data-view="grid" title="Grid View"><i class="fas fa-grid-2"></i></button>
+                <button data-view="list" title="List View"><i class="fas fa-list"></i></button>
+              </div>
+              <button class="ws-btn" id="ws-sort-btn" title="Sort"><i class="fas fa-arrow-down-wide-short"></i></button>
+              <button class="ws-btn" id="ws-new-folder-btn" title="New Folder"><i class="fas fa-folder-plus"></i></button>
+              <button class="ws-btn primary" id="ws-upload-main-btn"><i class="fas fa-cloud-arrow-up"></i> Upload</button>
+              <button class="ws-btn" id="ws-ai-toggle" title="AI Assistant"><i class="fas fa-wand-magic-sparkles"></i></button>
+            </div>
+          </div>
+
+          <!-- BULK ACTIONS -->
+          <div class="ws-bulk-bar" id="ws-bulk-bar">
+            <span class="selected-count" id="ws-selected-count">0 selected</span>
+            <button class="ws-btn" id="ws-bulk-move"><i class="fas fa-arrows-up-down-left-right"></i> Move</button>
+            <button class="ws-btn" id="ws-bulk-copy"><i class="fas fa-copy"></i> Copy</button>
+            <button class="ws-btn" id="ws-bulk-favorite"><i class="fas fa-star"></i> Favorite</button>
+            <button class="ws-btn danger" id="ws-bulk-delete"><i class="fas fa-trash"></i> Delete</button>
+            <button class="ws-btn" id="ws-bulk-clear" style="margin-left:auto;">Clear</button>
+          </div>
+
+          <!-- FILE AREA -->
+          <div class="ws-file-area" id="ws-file-area">
+            <div class="ws-file-area-header">
+              <h2 id="ws-area-title">All Files</h2>
+              <span class="file-count" id="ws-area-count">0 items</span>
+            </div>
+            <div class="ws-grid" id="ws-grid"></div>
+            <div class="ws-list" id="ws-list">
+              <div class="ws-list-header">
+                <span></span><span>Name</span><span>Size</span><span>Type</span><span>Modified</span><span></span>
+              </div>
+              <div id="ws-list-body"></div>
+            </div>
+            <div class="ws-empty" id="ws-empty" style="display:none;">
+              <div class="empty-icon"><i class="fas fa-folder-open"></i></div>
+              <h3>No files yet</h3>
+              <p>Upload files or create folders to get started</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORT STUDIO VIEW (hidden by default) -->
+      <div id="ws-report-studio" class="ws-report-studio" style="flex:1;overflow:hidden;">
+        <div class="ws-report-toolbar">
+          <button class="back-btn" id="ws-report-back"><i class="fas fa-arrow-left"></i> Back to Files</button>
+          <input type="text" class="report-title" id="ws-report-title" value="Untitled Report" placeholder="Report title...">
+          <div class="save-status" id="ws-save-status"><span class="dot"></span> Saved</div>
+          <button class="ws-btn" id="ws-report-versions"><i class="fas fa-clock-rotate-left"></i> Versions</button>
+          <button class="ws-btn" id="ws-report-export"><i class="fas fa-download"></i> Export</button>
+          <button class="ws-btn" id="ws-report-share"><i class="fas fa-share-nodes"></i> Share</button>
+        </div>
+        <div class="ws-report-canvas" id="ws-report-canvas">
+          <div class="ws-report-content" id="ws-report-content"></div>
+          <div class="ws-add-section" id="ws-add-section"><i class="fas fa-plus"></i> Add Section</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONTEXT MENU -->
+  <div class="ws-context-menu" id="ws-context-menu">
+    <div class="ctx-item" data-action="open"><i class="fas fa-folder-open"></i>Open<span class="shortcut">Enter</span></div>
+    <div class="ctx-item" data-action="rename"><i class="fas fa-pen"></i>Rename<span class="shortcut">F2</span></div>
+    <div class="ctx-item" data-action="duplicate"><i class="fas fa-copy"></i>Duplicate</div>
+    <div class="ctx-divider"></div>
+    <div class="ctx-item" data-action="move"><i class="fas fa-arrows-up-down-left-right"></i>Move to...</div>
+    <div class="ctx-item" data-action="copy"><i class="fas fa-clone"></i>Copy to...</div>
+    <div class="ctx-divider"></div>
+    <div class="ctx-item" data-action="favorite"><i class="fas fa-star"></i>Favorite</div>
+    <div class="ctx-item" data-action="pin"><i class="fas fa-thumbtack"></i>Pin</div>
+    <div class="ctx-item" data-action="lock"><i class="fas fa-lock"></i>Lock</div>
+    <div class="ctx-divider"></div>
+    <div class="ctx-item" data-action="download"><i class="fas fa-download"></i>Download</div>
+    <div class="ctx-item" data-action="archive"><i class="fas fa-box-archive"></i>Archive</div>
+    <div class="ctx-item" data-action="share"><i class="fas fa-share-nodes"></i>Share</div>
+    <div class="ctx-divider"></div>
+    <div class="ctx-item danger" data-action="delete"><i class="fas fa-trash"></i>Delete<span class="shortcut">Del</span></div>
+  </div>
+
+  <!-- DROP ZONE -->
+  <div class="ws-dropzone" id="ws-dropzone">
+    <div class="drop-content">
+      <i class="fas fa-cloud-arrow-up"></i>
+      <h3>Drop files here</h3>
+      <p>Files will be uploaded to current folder</p>
+    </div>
+  </div>
+
+  <!-- UPLOAD PANEL -->
+  <div class="ws-upload-panel" id="ws-upload-panel">
+    <div class="upload-header"><span>Uploading...</span><button class="ws-btn" id="ws-upload-close"><i class="fas fa-times"></i></button></div>
+    <div class="upload-list" id="ws-upload-list"></div>
+  </div>
+
+  <!-- SORT DROPDOWN -->
+  <div class="ws-context-menu" id="ws-sort-menu">
+    <div class="ctx-item" data-sort="name"><i class="fas fa-font"></i>Name</div>
+    <div class="ctx-item" data-sort="date"><i class="fas fa-clock"></i>Date Modified</div>
+    <div class="ctx-item" data-sort="size"><i class="fas fa-weight-hanging"></i>Size</div>
+    <div class="ctx-item" data-sort="type"><i class="fas fa-tag"></i>Type</div>
+  </div>
+
+  <!-- SECTION PICKER -->
+  <div class="ws-section-picker" id="ws-section-picker">
+    <div class="picker-item" data-type="title"><i class="fas fa-heading"></i>Title</div>
+    <div class="picker-item" data-type="text"><i class="fas fa-align-left"></i>Text</div>
+    <div class="picker-item" data-type="kpi"><i class="fas fa-chart-simple"></i>KPI Cards</div>
+    <div class="picker-item" data-type="table"><i class="fas fa-table"></i>Table</div>
+    <div class="picker-item" data-type="chart"><i class="fas fa-chart-pie"></i>Chart</div>
+    <div class="picker-item" data-type="insight"><i class="fas fa-lightbulb"></i>AI Insight</div>
+    <div class="picker-item" data-type="divider"><i class="fas fa-minus"></i>Divider</div>
+  </div>
+
+  <!-- VERSIONS PANEL -->
+  <div class="ws-versions-panel" id="ws-versions-panel">
+    <div class="panel-header"><h4>Version History</h4><button class="ws-btn" id="ws-versions-close"><i class="fas fa-times"></i></button></div>
+    <div class="version-list" id="ws-version-list"></div>
+  </div>
+
+  <!-- AI FILE ASSISTANT -->
+  <div class="ws-ai-panel" id="ws-ai-panel">
+    <div class="ai-header"><i class="fas fa-wand-magic-sparkles" style="color:var(--primary);"></i> AI File Assistant</div>
+    <div class="ai-messages" id="ws-ai-messages"></div>
+    <div class="ai-input-row">
+      <input type="text" id="ws-ai-input" placeholder="e.g. Create folder for invoices...">
+      <button id="ws-ai-send"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+
+  <!-- MODAL OVERLAY -->
+  <div class="ws-modal-overlay" id="ws-modal-overlay">
+    <div class="ws-modal" id="ws-modal">
+      <div class="modal-header"><h3 id="ws-modal-title">Modal</h3><button class="ws-btn" id="ws-modal-close"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body" id="ws-modal-body"></div>
+      <div class="modal-footer" id="ws-modal-footer"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="ws-toast" id="ws-toast"></div>
+
+  <!-- Hidden file input -->
+  <input type="file" id="ws-file-input" multiple style="display:none;">
+  <input type="file" id="ws-folder-input" webkitdirectory style="display:none;">
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/file-manager.js"></script>
+  <script src="js/report-studio.js"></script>
+</body>
+</html>

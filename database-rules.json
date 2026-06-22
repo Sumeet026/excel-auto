@@ -1,0 +1,38 @@
+{
+  "rules": {
+    "notifications": {
+      "$userId": {
+        ".read": "auth != null && (auth.uid === $userId || auth.token.email === 'admin@excelauto.com')",
+        ".write": "auth != null && (auth.uid === $userId || auth.token.email === 'admin@excelauto.com')"
+      }
+    },
+    "live_processing": {
+      "$userId": {
+        ".read": "auth != null && (auth.uid === $userId || auth.token.email === 'admin@excelauto.com')",
+        ".write": "auth != null && (auth.uid === $userId || auth.token.email === 'admin@excelauto.com')"
+      }
+    },
+    "files": {
+      "$userId": {
+        ".read": "auth != null && (auth.uid === $userId || auth.token.email === 'admin@excelauto.com')",
+        ".write": "auth != null && (auth.uid === $userId || auth.token.email === 'admin@excelauto.com')"
+      }
+    },
+    "reports": {
+      "$userId": {
+        ".read": "auth != null && (auth.uid === $userId || auth.token.email === 'admin@excelauto.com')",
+        ".write": "auth != null && (auth.uid === $userId || auth.token.email === 'admin@excelauto.com')"
+      }
+    },
+    "activities": {
+      "$userId": {
+        ".read": "auth != null && (auth.uid === $userId || auth.token.email === 'admin@excelauto.com')",
+        ".write": "auth != null && (auth.uid === $userId || auth.token.email === 'admin@excelauto.com')"
+      }
+    },
+    "live_feed": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
+  }
+}

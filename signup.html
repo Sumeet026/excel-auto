@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - ExcelAuto Console</title>
+  
+  <!-- FontAwesome & Custom CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+  <!-- Floating Glow Orbs -->
+  <div class="bg-glow-orb orb-1"></div>
+  <div class="bg-glow-orb orb-2"></div>
+
+  <div class="auth-container">
+    <!-- Card container shifts to success display on verification step -->
+    <div class="card auth-card" id="signup-card-wrapper">
+      <div id="signup-form-step">
+        <div class="auth-logo">
+          <i class="fas fa-file-excel"></i>
+          <span>ExcelAuto</span>
+        </div>
+        <p class="auth-subtitle">Create your professional automation workspace</p>
+        
+        <!-- Alert Box -->
+        <div id="auth-alert" style="display: none; padding: 12px; margin-bottom: 20px; border-radius: var(--border-radius-md); font-size: 0.85rem;" class="status-pill danger">
+          <i class="fas fa-exclamation-circle" style="margin-right: 8px;"></i>
+          <span id="auth-alert-message">Validation alert details</span>
+        </div>
+
+        <form id="signup-form">
+          <div class="form-group">
+            <label class="form-label" for="signup-name">Full Name</label>
+            <input class="form-input" type="text" id="signup-name" required placeholder="John Doe">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="signup-email">Email Address</label>
+            <input class="form-input" type="email" id="signup-email" required placeholder="name@company.com">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="signup-password">Password</label>
+            <input class="form-input" type="password" id="signup-password" required placeholder="•••••••• (Min 6 chars)">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="signup-confirm-password">Confirm Password</label>
+            <input class="form-input" type="password" id="signup-confirm-password" required placeholder="••••••••">
+          </div>
+
+          <label class="checkbox-group" style="margin-bottom: 24px;">
+            <input type="checkbox" id="terms-agree" required>
+            <span style="font-size: 0.8rem;">I agree to the Terms of Service & Privacy Policy</span>
+          </label>
+
+          <button class="btn btn-primary" type="submit" style="width: 100%;" id="btn-signup-submit">
+            <span>Create Account</span>
+            <span class="spinner" id="signup-spinner" style="display: none; width: 16px; height: 16px; border-width: 2px;"></span>
+          </button>
+        </form>
+
+        <div class="auth-divider">Or join with</div>
+
+        <button class="btn-google" id="btn-google-signup">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" alt="Google Logo">
+          <span>Google Account</span>
+        </button>
+
+        <div class="auth-footer">
+          Already have an account? <a href="login.html">Sign In</a>
+        </div>
+      </div>
+
+      <!-- Verification Success State (Initially Hidden) -->
+      <div id="signup-verification-step" style="display: none;" class="auth-status-container">
+        <div class="auth-status-icon">
+          <i class="fas fa-envelope-open-text"></i>
+        </div>
+        <h2>Verify your email</h2>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
+          We've sent a verification link to <strong id="sent-email-placeholder">user@example.com</strong>. 
+          Please click on the link in that email to activate and verify your automation account.
+        </p>
+        <button class="btn btn-primary" onclick="location.href='login.html'" style="width: 100%; margin-top: 10px;">
+          Proceed to Login
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Load Firebase compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+
+  <!-- Script Modules -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/signup.js"></script>
+</body>
+</html>

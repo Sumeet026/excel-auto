@@ -1,0 +1,54 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper function to check if the user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user owns the storage path folder
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Helper function to check if user has admin email
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.email == 'admin@excelauto.com';
+    }
+
+    // Rules for user-specific directories
+    match /users/{userId}/{allPaths=**} {
+      
+      // Allow read if owner or admin
+      allow read: if isOwner(userId) || isAdmin();
+      
+      // Allow writes with sizing and content checks (50MB limit matches dashboard.js)
+      allow write: if (isOwner(userId) || isAdmin()) 
+                    && request.resource.size < 50 * 1024 * 1024
+                    && (
+                      // Excel spreadsheets
+                      request.resource.contentType == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+                      request.resource.contentType == 'application/vnd.ms-excel' ||
+                      // CSV
+                      request.resource.contentType == 'text/csv' ||
+                      // PDF
+                      request.resource.contentType == 'application/pdf' ||
+                      // JSON
+                      request.resource.contentType == 'application/json' ||
+                      // XML
+                      request.resource.contentType == 'application/xml' ||
+                      request.resource.contentType == 'text/xml' ||
+                      // Plain text
+                      request.resource.contentType == 'text/plain' ||
+                      // Fallback binary
+                      request.resource.contentType == 'application/octet-stream' ||
+                      // Profile image uploads
+                      request.resource.contentType.matches('image/.*')
+                    );
+      
+      // Allow deletes if owner or admin
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+  }
+}

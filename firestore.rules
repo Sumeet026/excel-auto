@@ -1,0 +1,64 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if the user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if the user is accessing their own document
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Helper function to check if user has admin role
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.email == 'admin@excelauto.com' || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+    }
+
+    // 1. Users collection rules
+    match /users/{userId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+    
+    // 2. Files collection rules
+    match /files/{fileId} {
+      allow read, write: if (isAuthenticated() && resource.data.createdBy == request.auth.uid) || isAdmin();
+      allow create: if isAuthenticated() && request.resource.data.createdBy == request.auth.uid;
+      allow delete: if (isAuthenticated() && resource.data.createdBy == request.auth.uid) || isAdmin();
+    }
+    
+    // 3. Reports collection rules
+    match /reports/{reportId} {
+      allow read, write: if (isAuthenticated() && resource.data.createdBy == request.auth.uid) || isAdmin();
+      allow create: if isAuthenticated() && request.resource.data.createdBy == request.auth.uid;
+      allow delete: if (isAuthenticated() && resource.data.createdBy == request.auth.uid) || isAdmin();
+    }
+    
+    // 4. Activities collection rules
+    match /activities/{activityId} {
+      allow read: if (isAuthenticated() && resource.data.createdBy == request.auth.uid) || isAdmin();
+      allow write, create: if isAuthenticated() && request.resource.data.createdBy == request.auth.uid;
+      allow delete: if isAdmin();
+    }
+
+    // 5. Notifications collection rules
+    match /notifications/{notifId} {
+      allow read, write: if (isAuthenticated() && resource.data.createdBy == request.auth.uid) || isAdmin();
+      allow create: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+
+    // 6. Settings collection rules
+    match /settings/{userId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated();
+      allow delete: if isAdmin();
+    }
+  }
+}

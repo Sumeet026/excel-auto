@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - ExcelAuto Console</title>
+  
+  <!-- FontAwesome & Outfit Font -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Shared Stylesheets -->
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  
+  <style>
+    /* Local custom updates for dashboard consoles */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 3fr 1fr;
+      gap: 32px;
+    }
+    @media (max-width: 1200px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    /* Formula & Cleaning Tab system */
+    .workspace-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 24px;
+      gap: 16px;
+    }
+    .workspace-tab {
+      padding: 12px 20px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+      border-bottom: 2px solid transparent;
+      transition: all var(--transition-speed);
+    }
+    .workspace-tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+    .workspace-section {
+      display: none;
+    }
+    .workspace-section.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+    
+    /* Skeleton Loading system */
+    @keyframes skeleton-loading {
+      0% { background-position: 100% 50%; }
+      100% { background-position: 0 50%; }
+    }
+    .skeleton-box {
+      background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.03) 75%);
+      background-size: 200% 100%;
+      animation: skeleton-loading 1.5s infinite;
+      border-radius: 4px;
+    }
+    .skeleton-text {
+      height: 14px;
+      width: 100%;
+      margin-bottom: 8px;
+    }
+    .skeleton-value {
+      height: 28px;
+      width: 60px;
+      margin-bottom: 6px;
+    }
+    
+    /* Table preview pagination scroll */
+    .preview-table-wrapper {
+      max-height: 400px;
+      overflow-y: auto;
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <i class="fas fa-file-excel"></i>
+        <span>ExcelAuto</span>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="sidebar-menu-item active">
+          <a href="dashboard.html">
+            <i class="fas fa-chart-pie"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="reports.html">
+            <i class="fas fa-file-invoice"></i>
+            <span>Report Generator</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="analytics.html">
+            <i class="fas fa-chart-line"></i>
+            <span>Analytics</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="ai-center.html">
+            <i class="fas fa-robot"></i>
+            <span>AI Command Center</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="profile.html">
+            <i class="fas fa-user-circle"></i>
+            <span>User Profile</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="settings.html">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+          </a>
+        </li>
+      </ul>
+      <div class="sidebar-footer">
+        <div class="sidebar-profile">
+          <img class="profile-avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150" alt="Avatar">
+          <div class="profile-info">
+            <span class="profile-name">Loading...</span>
+            <span class="profile-role">Premium Account</span>
+          </div>
+        </div>
+        <button class="logout-btn" id="logout-btn">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+      <!-- Top bar -->
+      <header class="top-bar">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+          <h2 class="page-title">Dashboard Console</h2>
+        </div>
+        
+        <div class="top-bar-actions">
+          <!-- Notification center -->
+          <div class="notifications-wrapper">
+            <button class="icon-badge" id="notification-bell-btn">
+              <i class="fas fa-bell"></i>
+              <span class="badge" id="notification-badge" style="display: none;"></span>
+            </button>
+            <div class="notification-dropdown" id="notification-dropdown">
+              <div class="notification-header">
+                <span>Notifications</span>
+                <a href="#" style="color: var(--primary); font-size: 0.75rem;" id="mark-all-read-btn">Mark all read</a>
+              </div>
+              <div class="notification-list" id="notification-list">
+                <!-- Notifications loaded dynamically -->
+                <div style="padding: 16px; text-align: center; color: var(--text-muted); font-size: 0.8rem;">Loading notifications...</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Theme toggle -->
+          <button class="theme-toggle-btn" id="theme-toggle">
+            <i class="fas fa-moon"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Dashboard Main Workspace -->
+      <main class="main-content">
+        
+        <!-- Live Alert Banner (For real time activity flags) -->
+        <div id="live-progress-banner" class="status-pill info" style="display: none; width: 100%; padding: 14px 20px; border-radius: var(--border-radius-md); margin-bottom: 24px; font-weight: 500;">
+          <i class="fas fa-cog fa-spin" style="margin-right: 12px; font-size: 1.1rem;"></i>
+          <span id="live-progress-text">Processing engine status: idle</span>
+        </div>
+
+        <!-- Metrics Cards Grid -->
+        <div class="metrics-grid">
+          <div class="card metric-card">
+            <div class="metric-icon-wrapper"><i class="fas fa-file-excel"></i></div>
+            <div class="metric-details">
+              <span class="metric-value" id="stat-total-files">0</span>
+              <span class="metric-label">Files Uploaded</span>
+            </div>
+          </div>
+          <div class="card metric-card success">
+            <div class="metric-icon-wrapper"><i class="fas fa-file-invoice"></i></div>
+            <div class="metric-details">
+              <span class="metric-value" id="stat-total-reports">0</span>
+              <span class="metric-label">Reports Generated</span>
+            </div>
+          </div>
+          <div class="card metric-card info">
+            <div class="metric-icon-wrapper"><i class="fas fa-database"></i></div>
+            <div class="metric-details">
+              <span class="metric-value" id="stat-total-records">0</span>
+              <span class="metric-label">Records Cleaned</span>
+            </div>
+          </div>
+          <div class="card metric-card warning">
+            <div class="metric-icon-wrapper"><i class="fas fa-brain"></i></div>
+            <div class="metric-details">
+              <span class="metric-value" id="stat-ai-insights">0</span>
+              <span class="metric-label">AI Insights</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Workspace Layout -->
+        <div class="dashboard-grid">
+          
+          <!-- Column 1: Files Manager and Excel Console -->
+          <div style="display: flex; flex-direction: column; gap: 32px;">
+            
+            <!-- File Drag and Drop Upload -->
+            <div class="card">
+              <div class="section-header">
+                <h3 class="section-title"><i class="fas fa-cloud-arrow-up"></i> Upload Spreadsheet</h3>
+                <span class="upload-subtext">Storage Quota: <span id="storage-percentage">0.0%</span> of 50MB used</span>
+              </div>
+              
+              <div class="upload-zone" id="drop-zone">
+                <i class="fas fa-file-excel upload-icon"></i>
+                <div class="upload-text">Drag and drop your spreadsheet here, or click to browse</div>
+                <div class="upload-subtext">Supports XLSX, XLS, CSV, PDF, TXT, JSON, XML files (Max 50MB per file)</div>
+                <input type="file" id="file-input" multiple accept=".xlsx,.xls,.csv,.pdf,.txt,.json,.xml" style="display: none;">
+              </div>
+
+              <!-- Uploading Progress indicators -->
+              <div class="file-progress-container" id="upload-progress-wrapper" style="display: none;">
+                <div class="file-progress-details">
+                  <span id="uploading-file-name">filename.xlsx</span>
+                  <span id="uploading-percentage">0%</span>
+                </div>
+                <div class="file-progress-bar">
+                  <div class="file-progress-fill" id="upload-progress-fill"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Uploaded Files Manager -->
+            <div class="card">
+              <div class="section-header">
+                <h3 class="section-title"><i class="fas fa-folder-open"></i> File Manager</h3>
+                <span style="font-size: 0.8rem; color: var(--text-muted);" id="file-count-label">0 files saved</span>
+              </div>
+              <div class="file-list" id="files-list-container">
+                <!-- Loaded dynamically -->
+                <div style="padding: 24px; text-align: center; color: var(--text-muted);">
+                  <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 12px; display: block;"></i>
+                  No spreadsheets uploaded yet. Upload a file to start processing.
+                </div>
+              </div>
+            </div>
+
+            <!-- Spreadsheet Workspace Console (Cleaning & Automation) -->
+            <div class="card" id="excel-workspace-card" style="display: none;">
+              <div class="section-header">
+                <h3 class="section-title"><i class="fas fa-cube"></i> Spreadsheet Studio</h3>
+                <span class="status-pill info" id="active-filename">Active: demo.xlsx</span>
+              </div>
+
+              <!-- Sheet Control Tabs -->
+              <div class="workspace-tabs">
+                <div class="workspace-tab active" data-target="tab-preview">Data Preview</div>
+                <div class="workspace-tab" data-target="tab-cleaning">Clean Operations</div>
+                <div class="workspace-tab" data-target="tab-formulas">Formula solver</div>
+                <div class="workspace-tab" data-target="tab-mapping">Column mapping</div>
+                <div class="workspace-tab" data-target="tab-ai-assistant"><i class="fas fa-brain" style="color: var(--primary); margin-right: 6px;"></i>AI Tools</div>
+                <div class="workspace-tab" data-target="tab-data-quality"><i class="fas fa-shield-halved" style="color: #10b981; margin-right: 6px;"></i>Data Quality <span id="dq-score-badge" style="font-size: 0.65rem; padding: 1px 6px; border-radius: 10px; background: rgba(16,185,129,0.1); color: #10b981; margin-left: 4px; font-weight: 700;"></span></div>
+                <div class="workspace-tab" data-target="tab-charts"><i class="fas fa-chart-bar" style="color: #06b6d4; margin-right: 6px;"></i>Charts</div>
+                <div class="workspace-tab" data-target="tab-pivot"><i class="fas fa-table-pivot" style="color: #a855f7; margin-right: 6px;"></i>Pivot Table</div>
+                <div class="workspace-tab" data-target="tab-top-customers"><i class="fas fa-trophy" style="color: #f59e0b; margin-right: 6px;"></i>Top 10</div>
+              </div>
+
+              <!-- TAB: Data Preview -->
+              <div class="workspace-section active" id="tab-preview">
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px;">
+                  Real-time preview of the spreadsheet records (displays first 15 rows).
+                </p>
+                <div class="preview-container">
+                  <div class="preview-header-bar">
+                    <span class="preview-title" id="preview-records-count">Records parsed: 0</span>
+                    <div style="position: relative; display: inline-block;">
+                      <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem;" id="btn-export-dropdown-toggle">
+                        <i class="fas fa-download"></i> Export & Convert <i class="fas fa-caret-down" style="margin-left: 4px;"></i>
+                      </button>
+                      <div class="dropdown-menu" id="export-dropdown-menu" style="position: absolute; right: 0; top: 32px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--border-radius-sm); box-shadow: var(--glass-shadow); backdrop-filter: var(--backdrop-blur); -webkit-backdrop-filter: var(--backdrop-blur); z-index: 10; display: none; flex-direction: column; width: 150px; overflow: hidden;">
+                        <button class="dropdown-item" id="export-as-xlsx" style="background: none; border: none; padding: 10px 14px; text-align: left; font-size: 0.8rem; color: var(--text-primary); cursor: pointer; transition: background var(--transition-speed); display: flex; align-items: center; gap: 8px;"><i class="fas fa-file-excel" style="color: #10b981;"></i> Excel (.xlsx)</button>
+                        <button class="dropdown-item" id="export-as-csv" style="background: none; border: none; padding: 10px 14px; text-align: left; font-size: 0.8rem; color: var(--text-primary); cursor: pointer; transition: background var(--transition-speed); display: flex; align-items: center; gap: 8px;"><i class="fas fa-file-csv" style="color: #06b6d4;"></i> CSV (.csv)</button>
+                        <button class="dropdown-item" id="export-as-pdf" style="background: none; border: none; padding: 10px 14px; text-align: left; font-size: 0.8rem; color: var(--text-primary); cursor: pointer; transition: background var(--transition-speed); display: flex; align-items: center; gap: 8px;"><i class="fas fa-file-pdf" style="color: #ef4444;"></i> PDF Report</button>
+                        <button class="dropdown-item" id="export-as-json" style="background: none; border: none; padding: 10px 14px; text-align: left; font-size: 0.8rem; color: var(--text-primary); cursor: pointer; transition: background var(--transition-speed); display: flex; align-items: center; gap: 8px;"><i class="fas fa-file-code" style="color: #a855f7;"></i> JSON (.json)</button>
+                        <button class="dropdown-item" id="export-translate-hindi" style="background: none; border: none; padding: 10px 14px; text-align: left; font-size: 0.8rem; color: var(--text-primary); cursor: pointer; transition: background var(--transition-speed); display: flex; align-items: center; gap: 8px;"><i class="fas fa-language" style="color: #f59e0b;"></i> Translate to Hindi</button>
+                        <button class="dropdown-item" id="export-email-manager" style="background: none; border: none; padding: 10px 14px; text-align: left; font-size: 0.8rem; color: var(--text-primary); cursor: pointer; transition: background var(--transition-speed); display: flex; align-items: center; gap: 8px;"><i class="fas fa-envelope" style="color: #ef4444;"></i> Email to Manager</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="preview-table-wrapper" id="preview-table-container">
+                    <!-- Dynamic rendering of parsed spreadsheet data -->
+                    <table class="custom-table">
+                      <thead><tr><th>No Columns Detected</th></tr></thead>
+                      <tbody><tr><td>No data loaded</td></tr></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TAB: Data Cleaning Operations -->
+              <div class="workspace-section" id="tab-cleaning">
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 20px;">
+                  Quick automated routines to purge dirty values. Changes are shown instantly in the data preview above.
+                </p>
+                <div class="cleaning-grid">
+                  <button class="cleaning-btn" id="clean-duplicates">
+                    <i class="fas fa-copy"></i>
+                    <div>
+                      <div>Remove Duplicates</div>
+                      <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">Purge exact repeating rows</span>
+                    </div>
+                  </button>
+                  <button class="cleaning-btn" id="clean-empty-rows">
+                    <i class="fas fa-grip-lines"></i>
+                    <div>
+                      <div>Remove Empty Rows</div>
+                      <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">Remove lines with blank values</span>
+                    </div>
+                  </button>
+                  <button class="cleaning-btn" id="clean-empty-cols">
+                    <i class="fas fa-columns"></i>
+                    <div>
+                      <div>Remove Empty Cols</div>
+                      <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">Drop entirely blank header keys</span>
+                    </div>
+                  </button>
+                  <button class="cleaning-btn" id="clean-trim">
+                    <i class="fas fa-compress"></i>
+                    <div>
+                      <div>Trim Spaces</div>
+                      <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">Remove leading/trailing spaces</span>
+                    </div>
+                  </button>
+                  <button class="cleaning-btn" id="clean-fix-dates">
+                    <i class="fas fa-calendar-check"></i>
+                    <div>
+                      <div>Fix Dates</div>
+                      <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">Normalize dates to YYYY-MM-DD</span>
+                    </div>
+                  </button>
+                  <button class="cleaning-btn" id="clean-spec-chars">
+                    <i class="fas fa-hashtag"></i>
+                    <div>
+                      <div>Clean Special Chars</div>
+                      <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">Remove non-alphanumeric chars</span>
+                    </div>
+                  </button>
+                </div>
+                <div class="modal-footer" style="padding: 16px 0 0 0; border-top: 1px solid var(--card-border);">
+                  <button class="btn btn-secondary" id="btn-cleaning-discard">Discard Changes</button>
+                  <button class="btn btn-primary" id="btn-cleaning-save">Save Cleaned Sheet</button>
+                </div>
+              </div>
+
+              <!-- TAB: Formulas Solver -->
+              <div class="workspace-section" id="tab-formulas">
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 20px;">
+                  Apply standard functions or lookup logic on specific columns to compute fresh columns.
+                </p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                  <div class="form-group">
+                    <label class="form-label" for="formula-select">Select Formula</label>
+                    <select class="form-select" id="formula-select">
+                      <option value="SUM">SUM (Adds range of values)</option>
+                      <option value="AVERAGE">AVERAGE (Mean of range)</option>
+                      <option value="IF">IF (Conditional evaluation)</option>
+                      <option value="COUNTIF">COUNTIF (Count matched values)</option>
+                      <option value="XLOOKUP">XLOOKUP / INDEX MATCH (Fetch values from other rows)</option>
+                    </select>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label class="form-label" for="formula-target-col">Apply to Column (Output Column)</label>
+                    <input class="form-input" type="text" id="formula-target-col" placeholder="e.g. TotalPrice">
+                  </div>
+                </div>
+
+                <div class="form-group" id="formula-input-expression-group">
+                  <label class="form-label" id="formula-expression-label" for="formula-expression">Formula Parameters / Condition Expression</label>
+                  <input class="form-input" type="text" id="formula-expression" placeholder="e.g. Quantity * Price  OR  Age > 18 ? 'Adult' : 'Minor'">
+                  <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px;" id="formula-help-text">
+                    For mathematical and logical statements, specify operations referencing header names.
+                  </small>
+                </div>
+
+                <div class="modal-footer" style="padding: 16px 0 0 0; border-top: 1px solid var(--card-border);">
+                  <button class="btn btn-primary" id="btn-formula-evaluate">Evaluate & Add Column</button>
+                </div>
+              </div>
+
+              <!-- TAB: Column Mapping -->
+              <div class="workspace-section" id="tab-mapping">
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+                  Map columns in your sheet to standard database values. Helpful when aligning multiple layouts before a merge.
+                </p>
+                
+                <div class="column-mapping-list" id="mapping-fields-list">
+                  <!-- Columns mapped dynamically -->
+                  <div style="padding: 12px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+                    No columns found.
+                  </div>
+                </div>
+                
+                <div class="modal-footer" style="padding: 16px 0 0 0; border-top: 1px solid var(--card-border); margin-top: 16px;">
+                  <button class="btn btn-primary" id="btn-mapping-apply">Apply Mappings</button>
+                </div>
+              </div>
+
+              <!-- TAB: AI Tools Workspace -->
+              <div class="workspace-section" id="tab-ai-assistant">
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 20px;">
+                  Unleash background machine learning algorithms to automate column expressions, predict forecast points, and locate anomalies.
+                </p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                  <!-- AI Formula Generator -->
+                  <div class="card" style="background: rgba(255,255,255,0.01); border: 1px solid var(--card-border); padding: 16px; margin: 0;">
+                    <h4 style="font-size: 0.85rem; font-weight: 700; margin-bottom: 12px; color: var(--primary);"><i class="fas fa-magic"></i> AI Formula Generator</h4>
+                    <div class="form-group">
+                      <label class="form-label" for="ai-formula-prompt">Describe in Plain English</label>
+                      <input class="form-input" type="text" id="ai-formula-prompt" placeholder="e.g. If revenue is over 10000, set Bonus as 10% of revenue else 0">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label" for="ai-formula-target">Output Column Name</label>
+                      <input class="form-input" type="text" id="ai-formula-target" placeholder="e.g. SalesCommission">
+                    </div>
+                    <button class="btn btn-primary" id="btn-ai-formula-gen" style="width: 100%; font-size: 0.8rem; padding: 8px;">Generate & Run Expression</button>
+                  </div>
+                  
+                  <!-- AI Forecast Model -->
+                  <div class="card" style="background: rgba(255,255,255,0.01); border: 1px solid var(--card-border); padding: 16px; margin: 0;">
+                    <h4 style="font-size: 0.85rem; font-weight: 700; margin-bottom: 12px; color: var(--success);"><i class="fas fa-chart-line"></i> AI Linear Forecasting</h4>
+                    <div class="form-group">
+                      <label class="form-label" for="ai-forecast-col">Target Column to Predict</label>
+                      <select class="form-select" id="ai-forecast-col">
+                        <option value="">-- Choose Column --</option>
+                      </select>
+                    </div>
+                    <div id="ai-forecast-result-box" style="margin-top: 10px; display: none;">
+                      <div style="font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Predicted Next 3 Values:</div>
+                      <div style="font-size: 1.1rem; font-weight: 700; color: var(--success);" id="ai-forecast-values">0.00, 0.00, 0.00</div>
+                      <span id="ai-forecast-badge" class="status-pill success" style="padding: 2px 8px; font-size: 0.65rem; margin-top: 4px; display: inline-block;">GROWTH</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- AI Anomalies and Insights -->
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                  <div class="card" style="background: rgba(255,255,255,0.01); border: 1px solid var(--card-border); padding: 16px; margin: 0;">
+                    <h4 style="font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; color: var(--warning);"><i class="fas fa-triangle-exclamation"></i> AI Error & Outlier Alerts</h4>
+                    <div style="max-height: 150px; overflow-y: auto; font-size: 0.8rem; padding-right: 4px;" id="ai-anomalies-list">
+                      <span style="color: var(--text-muted);">Run sheet analysis to detect outliers or scripts.</span>
+                    </div>
+                  </div>
+
+                  <div class="card" style="background: rgba(255,255,255,0.01); border: 1px solid var(--card-border); padding: 16px; margin: 0;">
+                    <h4 style="font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; color: var(--info);"><i class="fas fa-lightbulb"></i> Auto Insights summary</h4>
+                    <div style="font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary);" id="ai-insights-box">
+                      No scanned insights. Load sheet to compute statistics.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TAB: Data Quality Center -->
+              <div class="workspace-section" id="tab-data-quality">
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 20px;">
+                  Automatic data quality scan — detects duplicates, missing values, invalid dates, emails, and phone numbers with a composite quality score.
+                </p>
+
+                <div id="dq-results-container">
+                  <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                    <i class="fas fa-shield-halved" style="font-size: 2.5rem; margin-bottom: 12px; display: block; opacity: 0.3;"></i>
+                    <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 4px;">No Data Loaded</div>
+                    <div style="font-size: 0.8rem;">Load a spreadsheet into the Studio to run automatic quality analysis.</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TAB: Charts from Data -->
+              <div class="workspace-section" id="tab-charts">
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px;">
+                  Auto-generated charts from your spreadsheet data. Select columns to visualize trends and distributions.
+                </p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                  <div class="form-group">
+                    <label class="form-label" for="chart-x-col">X-Axis / Category Column</label>
+                    <select class="form-select" id="chart-x-col"><option value="">-- Auto Detect --</option></select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="chart-y-col">Y-Axis / Value Column</label>
+                    <select class="form-select" id="chart-y-col"><option value="">-- Auto Detect --</option></select>
+                  </div>
+                </div>
+                <button class="btn btn-primary" id="btn-render-chart" style="margin-bottom: 16px; font-size: 0.85rem;"><i class="fas fa-chart-bar"></i> Generate Chart</button>
+                <div style="background: rgba(0,0,0,0.15); border: 1px solid var(--card-border); border-radius: var(--border-radius-md); padding: 16px; height: 320px; position: relative;">
+                  <canvas id="data-chart-canvas"></canvas>
+                </div>
+              </div>
+
+              <!-- TAB: Pivot Table -->
+              <div class="workspace-section" id="tab-pivot">
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px;">
+                  Create a pivot table by grouping rows and aggregating values. Choose columns and aggregation function.
+                </p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                  <div class="form-group">
+                    <label class="form-label" for="pivot-row-col">Group By (Row)</label>
+                    <select class="form-select" id="pivot-row-col"><option value="">-- Select --</option></select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="pivot-value-col">Aggregate Value</label>
+                    <select class="form-select" id="pivot-value-col"><option value="">-- Select --</option></select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="pivot-agg-func">Function</label>
+                    <select class="form-select" id="pivot-agg-func">
+                      <option value="SUM">SUM</option>
+                      <option value="AVG">AVERAGE</option>
+                      <option value="COUNT">COUNT</option>
+                      <option value="MIN">MIN</option>
+                      <option value="MAX">MAX</option>
+                    </select>
+                  </div>
+                </div>
+                <button class="btn btn-primary" id="btn-render-pivot" style="margin-bottom: 16px; font-size: 0.85rem;"><i class="fas fa-table-pivot"></i> Generate Pivot</button>
+                <div id="pivot-result-container" style="max-height: 300px; overflow: auto; border: 1px solid var(--card-border); border-radius: var(--border-radius-sm);">
+                  <div style="padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">Configure columns and click Generate</div>
+                </div>
+              </div>
+
+              <!-- TAB: Top 10 Customers -->
+              <div class="workspace-section" id="tab-top-customers">
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px;">
+                  Automatically detects customer and revenue columns, then ranks the top 10 customers by total value.
+                </p>
+                <button class="btn btn-primary" id="btn-top-customers" style="margin-bottom: 16px; font-size: 0.85rem;"><i class="fas fa-trophy"></i> Analyze Top 10 Customers</button>
+                <div id="top-customers-container" style="max-height: 400px; overflow: auto;">
+                  <div style="padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+                    <i class="fas fa-trophy" style="font-size: 2rem; margin-bottom: 8px; display: block; opacity: 0.3;"></i>
+                    Click the button above to find your top customers.
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Column 2: Dashboard Status Feeds and Statistics -->
+          <div style="display: flex; flex-direction: column; gap: 32px;">
+            
+            <!-- System Stats Panel -->
+            <div class="card">
+              <h3 class="section-title" style="margin-bottom: 20px;"><i class="fas fa-chart-pie"></i> Usage Overview</h3>
+              <div style="display: flex; flex-direction: column; gap: 16px;">
+                
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 8px;">
+                    <span>Database Storage Limit</span>
+                    <span id="storage-stats-label">0 KB / 50 MB</span>
+                  </div>
+                  <div class="file-progress-bar">
+                    <div class="file-progress-fill" id="storage-stats-progress" style="width: 0%;"></div>
+                  </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                  <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                    <span style="color: var(--text-secondary);">Avg. Parsing Time</span>
+                    <strong style="color: var(--text-primary);">0.45s</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                    <span style="color: var(--text-secondary);">Engine Health</span>
+                    <strong class="status-pill success" style="padding: 2px 8px; font-size: 0.7rem;">Active</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                    <span style="color: var(--text-secondary);">Firebase Connection</span>
+                    <strong id="firebase-connection-badge" class="status-pill success" style="padding: 2px 8px; font-size: 0.7rem;">Live</strong>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Activity Logs Feed -->
+            <div class="card">
+              <h3 class="section-title" style="margin-bottom: 20px;"><i class="fas fa-clock"></i> Recent Activity</h3>
+              <div class="activity-feed" id="activity-feed-container">
+                <!-- Dynamically loaded activities -->
+                <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px;">
+                  Loading activity feed...
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- File Rename Overlay Modal -->
+  <div class="modal-overlay" id="rename-file-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Rename Spreadsheet</h3>
+        <button class="modal-close" id="rename-modal-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="rename-input">File Name</label>
+          <input class="form-input" type="text" id="rename-input" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btn-rename-cancel">Cancel</button>
+        <button class="btn btn-primary" id="btn-rename-submit">Save Name</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Email Report to Manager Modal -->
+  <div class="modal-overlay" id="email-manager-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-envelope" style="color: var(--primary); margin-right: 8px;"></i>Email Report to Manager</h3>
+        <button class="modal-close" id="email-modal-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="email-manager-addr">Manager Email</label>
+          <input class="form-input" type="email" id="email-manager-addr" placeholder="manager@company.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="email-subject">Subject</label>
+          <input class="form-input" type="text" id="email-subject" placeholder="Monthly Sales Report">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="email-message">Message</label>
+          <textarea class="form-input" id="email-message" rows="4" placeholder="Please find the attached report for your review." style="resize: vertical;"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btn-email-cancel">Cancel</button>
+        <button class="btn btn-primary" id="btn-email-send"><i class="fas fa-paper-plane"></i> Send via Email</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+  <!-- Load Chart.js CDN for modern interactive graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Load jsPDF and AutoTable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- Load SheetJS CDN for parsing Excel sheets client side -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <!-- Load Firebase compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+
+  <!-- AI Floating Chat Assistant -->
+  <button class="ai-chat-bubble" id="ai-chat-bubble" title="Open Copilot Assistant">
+    <i class="fas fa-robot"></i>
+  </button>
+
+  <div class="ai-chat-panel" id="ai-chat-panel">
+    <div class="ai-chat-header">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <i class="fas fa-robot" style="color: var(--primary);"></i>
+        <div>
+          <div style="font-weight: 700; font-size: 0.9rem; color: var(--text-primary);">Copilot AI</div>
+          <div style="font-size: 0.7rem; color: var(--success);">Online & ready</div>
+        </div>
+      </div>
+      <button class="ai-chat-close" id="ai-chat-close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="ai-chat-body" id="ai-chat-body">
+      <div class="ai-chat-message system">
+        Hello! I am your ExcelAuto AI Copilot. I can run operations on the active sheet. Type commands like:
+        <ul style="margin-top: 8px; padding-left: 16px; display: flex; flex-direction: column; gap: 4px;">
+          <li>"Create Sales Report"</li>
+          <li>"Find duplicates"</li>
+          <li>"Forecast sales"</li>
+          <li>"Show top 10 customers"</li>
+          <li>"Create chart"</li>
+          <li>"Create pivot table"</li>
+          <li>"Translate to Hindi"</li>
+          <li>"Email report"</li>
+          <li>"Highlight negatives"</li>
+          <li>"Find missing data"</li>
+          <li>"Analyze errors"</li>
+          <li>"Generate summaries"</li>
+        </ul>
+      </div>
+    </div>
+    <div class="ai-chat-footer">
+      <input type="text" class="ai-chat-input" id="ai-chat-input" placeholder="Type AI copilot commands...">
+      <button class="ai-chat-send" id="ai-chat-send"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/perf.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/data-quality.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "excel-auto",
+  "version": "1.0.0",
+  "description": "Excel Automation SaaS platform",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx http-server -c-1 ."
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "firebase": "10.8.0",
+    "xlsx": "^0.18.5",
+    "jspdf": "^2.5.1",
+    "pdfjs-dist": "^4.2.67",
+    "http-server": "^14.1.1"
+  }
+}

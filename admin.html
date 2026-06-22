@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - ExcelAuto</title>
+  
+  <!-- FontAwesome & Custom CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <style>
+    .search-filter-bar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .search-input-wrapper {
+      position: relative;
+      flex-grow: 1;
+      max-width: 400px;
+    }
+    .search-input-wrapper i {
+      position: absolute;
+      left: 14px;
+      top: 14px;
+      color: var(--text-muted);
+    }
+    .search-input-wrapper input {
+      padding-left: 40px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <i class="fas fa-file-excel"></i>
+        <span>ExcelAuto</span>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="sidebar-menu-item">
+          <a href="dashboard.html">
+            <i class="fas fa-chart-pie"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="reports.html">
+            <i class="fas fa-file-invoice"></i>
+            <span>Report Generator</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="analytics.html">
+            <i class="fas fa-chart-line"></i>
+            <span>Analytics</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="profile.html">
+            <i class="fas fa-user-circle"></i>
+            <span>User Profile</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="settings.html">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+          </a>
+        </li>
+      </ul>
+      <div class="sidebar-footer">
+        <div class="sidebar-profile">
+          <img class="profile-avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150" alt="Avatar">
+          <div class="profile-info">
+            <span class="profile-name">Loading...</span>
+            <span class="profile-role">Administrator</span>
+          </div>
+        </div>
+        <button class="logout-btn" id="logout-btn">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+      <!-- Top header -->
+      <header class="top-bar">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+          <h2 class="page-title">Admin Control Panel</h2>
+        </div>
+        
+        <div class="top-bar-actions">
+          <div class="notifications-wrapper">
+            <button class="icon-badge" id="notification-bell-btn">
+              <i class="fas fa-bell"></i>
+              <span class="badge" id="notification-badge" style="display: none;"></span>
+            </button>
+            <div class="notification-dropdown" id="notification-dropdown">
+              <div class="notification-header">
+                <span>Notifications</span>
+                <a href="#" style="color: var(--primary); font-size: 0.75rem;" id="mark-all-read-btn">Mark all read</a>
+              </div>
+              <div class="notification-list" id="notification-list">
+                <div style="padding: 16px; text-align: center; color: var(--text-muted); font-size: 0.8rem;">Loading notifications...</div>
+              </div>
+            </div>
+          </div>
+          
+          <button class="theme-toggle-btn" id="theme-toggle">
+            <i class="fas fa-moon"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main workspace -->
+      <main class="main-content">
+        
+        <!-- Navigation tab indicators for admin panels -->
+        <div class="workspace-tabs" style="margin-bottom: 32px;">
+          <div class="workspace-tab active" data-target="admin-sec-users">Users Accounts</div>
+          <div class="workspace-tab" data-target="admin-sec-files">Spreadsheet Files</div>
+          <div class="workspace-tab" data-target="admin-sec-reports">Generated Reports</div>
+          <div class="workspace-tab" data-target="admin-sec-logs">System Activity Logs</div>
+        </div>
+
+        <!-- TAB: Users accounts -->
+        <div class="workspace-section active" id="admin-sec-users">
+          <div class="card">
+            <div class="search-filter-bar">
+              <div class="search-input-wrapper">
+                <i class="fas fa-search"></i>
+                <input class="form-input" type="text" id="admin-search-users" placeholder="Search by name or email...">
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table" id="admin-users-table">
+                <thead>
+                  <tr>
+                    <th>User ID</th>
+                    <th>Full Name</th>
+                    <th>Email Address</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-users-tbody">
+                  <tr><td colspan="6" style="text-align: center;">Loading registered accounts...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Uploaded Files -->
+        <div class="workspace-section" id="admin-sec-files">
+          <div class="card">
+            <div class="search-filter-bar">
+              <div class="search-input-wrapper">
+                <i class="fas fa-search"></i>
+                <input class="form-input" type="text" id="admin-search-files" placeholder="Search files by name...">
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table" id="admin-files-table">
+                <thead>
+                  <tr>
+                    <th>File ID</th>
+                    <th>File Name</th>
+                    <th>Size</th>
+                    <th>Owner UID</th>
+                    <th>Date Uploaded</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-files-tbody">
+                  <tr><td colspan="6" style="text-align: center;">Loading file metadata logs...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Compiled Reports -->
+        <div class="workspace-section" id="admin-sec-reports">
+          <div class="card">
+            <div class="search-filter-bar">
+              <div class="search-input-wrapper">
+                <i class="fas fa-search"></i>
+                <input class="form-input" type="text" id="admin-search-reports" placeholder="Search reports...">
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table" id="admin-reports-table">
+                <thead>
+                  <tr>
+                    <th>Report ID</th>
+                    <th>Report Name</th>
+                    <th>Format</th>
+                    <th>Creator UID</th>
+                    <th>Date Generated</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-reports-tbody">
+                  <tr><td colspan="6" style="text-align: center;">Loading generated reports logs...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Global System Activity Logs -->
+        <div class="workspace-section" id="admin-sec-logs">
+          <div class="card">
+            <div class="search-filter-bar">
+              <div class="search-input-wrapper">
+                <i class="fas fa-search"></i>
+                <input class="form-input" type="text" id="admin-search-logs" placeholder="Search activity description...">
+              </div>
+              <button class="btn btn-secondary" id="admin-btn-clear-logs"><i class="fas fa-trash-alt"></i> Clear Logs Feed</button>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table" id="admin-logs-table">
+                <thead>
+                  <tr>
+                    <th>Activity ID</th>
+                    <th>Timestamp</th>
+                    <th>User</th>
+                    <th>Action Executed</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-logs-tbody">
+                  <tr><td colspan="4" style="text-align: center;">Loading live activity logs feed...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Load Firebase compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+
+  <!-- Script Modules -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

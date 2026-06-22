@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - ExcelAuto Console</title>
+  
+  <!-- FontAwesome & Custom CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+  <!-- Floating Glow Orbs -->
+  <div class="bg-glow-orb orb-1"></div>
+  <div class="bg-glow-orb orb-2"></div>
+
+  <div class="auth-container">
+    <div class="card auth-card">
+      <div class="auth-logo">
+        <i class="fas fa-file-excel"></i>
+        <span>ExcelAuto</span>
+      </div>
+      <p class="auth-subtitle">Sign in to manage your automated workflows</p>
+      
+      <!-- Alert Box -->
+      <div id="auth-alert" style="display: none; padding: 12px; margin-bottom: 20px; border-radius: var(--border-radius-md); font-size: 0.85rem;" class="status-pill danger">
+        <i class="fas fa-exclamation-circle" style="margin-right: 8px;"></i>
+        <span id="auth-alert-message">Error message goes here</span>
+      </div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label" for="login-email">Email Address</label>
+          <input class="form-input" type="email" id="login-email" required placeholder="name@company.com">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="login-password">Password</label>
+          <input class="form-input" type="password" id="login-password" required placeholder="••••••••">
+        </div>
+
+        <div class="auth-extra-links">
+          <label class="checkbox-group">
+            <input type="checkbox" id="remember-me">
+            <span>Remember me</span>
+          </label>
+          <a href="#" class="forgot-password-link" id="forgot-password-trigger">Forgot Password?</a>
+        </div>
+
+        <button class="btn btn-primary" type="submit" style="width: 100%;" id="btn-login-submit">
+          <span>Sign In</span>
+          <span class="spinner" id="login-spinner" style="display: none; width: 16px; height: 16px; border-width: 2px;"></span>
+        </button>
+      </form>
+
+      <div class="auth-divider">Or continue with</div>
+
+      <button class="btn-google" id="btn-google-login">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" alt="Google Logo">
+        <span>Google Account</span>
+      </button>
+
+      <div class="auth-footer">
+        Don't have an account? <a href="signup.html">Create free account</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal Overlay -->
+  <div class="modal-overlay" id="forgot-password-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Reset Password</h3>
+        <button class="modal-close" id="forgot-modal-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;">
+          Enter your registered email address and we'll send you instructions to reset your password.
+        </p>
+        <div class="form-group">
+          <label class="form-label" for="reset-email">Email Address</label>
+          <input class="form-input" type="email" id="reset-email" required placeholder="name@company.com">
+        </div>
+        <div id="reset-alert" style="display: none; padding: 12px; margin-top: 10px; border-radius: var(--border-radius-sm); font-size: 0.85rem;" class="status-pill success">
+          <i class="fas fa-check-circle" style="margin-right: 8px;"></i>
+          <span id="reset-alert-message">Verification details sent.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="forgot-cancel-btn">Cancel</button>
+        <button class="btn btn-primary" id="forgot-submit-btn">
+          <span>Send Recovery Email</span>
+          <span class="spinner" id="reset-spinner" style="display: none; width: 16px; height: 16px; border-width: 2px;"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load Firebase compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+
+  <!-- Script Modules -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile - ExcelAuto</title>
+  
+  <!-- FontAwesome & Custom CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <i class="fas fa-file-excel"></i>
+        <span>ExcelAuto</span>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="sidebar-menu-item">
+          <a href="dashboard.html">
+            <i class="fas fa-chart-pie"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="reports.html">
+            <i class="fas fa-file-invoice"></i>
+            <span>Report Generator</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="analytics.html">
+            <i class="fas fa-chart-line"></i>
+            <span>Analytics</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item active">
+          <a href="profile.html">
+            <i class="fas fa-user-circle"></i>
+            <span>User Profile</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="settings.html">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+          </a>
+        </li>
+      </ul>
+      <div class="sidebar-footer">
+        <div class="sidebar-profile">
+          <img class="profile-avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150" alt="Avatar">
+          <div class="profile-info">
+            <span class="profile-name">Loading...</span>
+            <span class="profile-role">Premium Account</span>
+          </div>
+        </div>
+        <button class="logout-btn" id="logout-btn">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+      <!-- Top header -->
+      <header class="top-bar">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+          <h2 class="page-title">My Profile</h2>
+        </div>
+        
+        <div class="top-bar-actions">
+          <div class="notifications-wrapper">
+            <button class="icon-badge" id="notification-bell-btn">
+              <i class="fas fa-bell"></i>
+              <span class="badge" id="notification-badge" style="display: none;"></span>
+            </button>
+            <div class="notification-dropdown" id="notification-dropdown">
+              <div class="notification-header">
+                <span>Notifications</span>
+                <a href="#" style="color: var(--primary); font-size: 0.75rem;" id="mark-all-read-btn">Mark all read</a>
+              </div>
+              <div class="notification-list" id="notification-list">
+                <div style="padding: 16px; text-align: center; color: var(--text-muted); font-size: 0.8rem;">Loading notifications...</div>
+              </div>
+            </div>
+          </div>
+          
+          <button class="theme-toggle-btn" id="theme-toggle">
+            <i class="fas fa-moon"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main workspace -->
+      <main class="main-content" style="max-width: 800px;">
+        <div class="card">
+          
+          <!-- Avatar Picture Upload Slot -->
+          <div class="profile-editor">
+            <div class="profile-avatar-large-wrapper">
+              <img class="profile-avatar-large" id="profile-pic-preview" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150" alt="Profile Picture">
+              <label class="avatar-upload-overlay" for="avatar-file-input">
+                <i class="fas fa-camera"></i>
+                <input type="file" id="avatar-file-input" accept="image/*">
+              </label>
+            </div>
+            <div>
+              <h3 style="font-weight: 700; text-align: center;" id="profile-name-header">John Doe</h3>
+              <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center;" id="profile-email-header">user@example.com</p>
+            </div>
+          </div>
+
+          <div class="workspace-tabs" style="margin-bottom: 32px;">
+            <div class="workspace-tab active" id="tab-trigger-details">Account details</div>
+            <div class="workspace-tab" id="tab-trigger-security">Security & password</div>
+          </div>
+
+          <!-- SECTION: Account details -->
+          <form id="profile-details-form">
+            <div class="form-group">
+              <label class="form-label" for="profile-name-input">Full Name</label>
+              <input class="form-input" type="text" id="profile-name-input" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="profile-email-input">Email Address</label>
+              <input class="form-input" type="email" id="profile-email-input" required>
+              <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;" id="verification-status-label">Email Status: Unverified</span>
+            </div>
+            
+            <div class="modal-footer" style="padding: 16px 0 0 0; border-top: 1px solid var(--card-border); margin-top: 24px;">
+              <button class="btn btn-primary" type="submit" id="btn-save-details">
+                <span>Save Profile Details</span>
+                <span class="spinner" id="details-spinner" style="display: none; width: 16px; height: 16px; border-width: 2px;"></span>
+              </button>
+            </div>
+          </form>
+
+          <!-- SECTION: Security & password (Initially Hidden) -->
+          <form id="profile-security-form" style="display: none;">
+            <div class="form-group">
+              <label class="form-label" for="profile-old-pwd">Current Password</label>
+              <input class="form-input" type="password" id="profile-old-pwd" required placeholder="••••••••">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="profile-new-pwd">New Password</label>
+              <input class="form-input" type="password" id="profile-new-pwd" required placeholder="•••••••• (Min 6 chars)">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="profile-confirm-pwd">Confirm New Password</label>
+              <input class="form-input" type="password" id="profile-confirm-pwd" required placeholder="••••••••">
+            </div>
+
+            <div class="modal-footer" style="padding: 16px 0 0 0; border-top: 1px solid var(--card-border); margin-top: 24px;">
+              <button class="btn btn-primary" type="submit" id="btn-save-security">
+                <span>Change Password</span>
+                <span class="spinner" id="security-spinner" style="display: none; width: 16px; height: 16px; border-width: 2px;"></span>
+              </button>
+            </div>
+          </form>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Load Firebase compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+
+  <!-- Script Modules -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/profile.js"></script>
+</body>
+</html>
